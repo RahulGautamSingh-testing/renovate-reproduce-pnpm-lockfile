@@ -3,6 +3,6 @@
   "recreateWhen": "always",
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": []
+    "schedule": [ ]
   }
 }

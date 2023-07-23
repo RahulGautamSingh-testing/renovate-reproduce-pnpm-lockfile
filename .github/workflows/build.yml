@@ -1,0 +1,46 @@
+---
+name: build
+on:
+  push:
+    tags-ignore:
+      - '**'
+    branches:
+      - main
+  pull_request:
+
+jobs:
+
+  npm-install:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [16,18,20]
+        npm-version: [7, 8]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install -g pnpm@${{ matrix.npm-version }}
+      - run: pnpm --version
+      - run: pnpm install
+      - run: |
+          lock_exited=0
+          json_exited=0
+          git diff --exit-code --quiet pnpm-lock.yaml || lock_exited=1
+          git diff --exit-code --quiet package.json || json_exited=1
+          
+          if [ "$lock_exited" != 0 ]; then
+            git diff pnpm-lock.yaml
+            echo "pnpm-lock.yaml is dirty"
+          fi
+          
+          if [ "$json_exited" != 0 ]; then
+            git diff package.json
+            echo "package.json is dirty"
+          fi
+          
+          if [ "$lock_exited" != 0 ] || [ "$json_exited" != 0 ]; then
+            exit 1
+          fi

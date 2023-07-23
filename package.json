@@ -1,0 +1,6 @@
+{
+  "name": "mjn-gitlab-ci-debugging",
+  "dependencies": {
+    "fastify": "^4.15.0"
+  }
+}
